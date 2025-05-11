@@ -3,6 +3,8 @@
 require 'discord_gemini_bot/conversation'
 
 module Conversation
+  DefaultPrompt = "あなたは Discord の bot です。以下にユーザーからの入力を渡すため、上限 140 字を目安に回答を生成してください。\n\n---\n\n"
+
   module_function
 
   def gemini_request(id)
@@ -16,12 +18,18 @@ module Conversation
 
   def push_user_text(id, text)
     @contents = {} if @contents.nil?
-    @contents[id] = [] if @contents[id].nil?
+
+    is_first_prompt = @contents[id].nil?
+    @contents[id] = [] if is_first_prompt
+
+    # 会話初めなら、初期プロンプトを与える
+    prompt = text
+    prompt = DefaultPrompt + text if is_first_prompt
 
     c = GeminiAPI::Types::Content.new(
       role: GeminiAPI::Types::ContentRole::User,
       parts: [
-        GeminiAPI::Types::Part.new(text: text)
+        GeminiAPI::Types::Part.new(text: prompt)
       ]
     )
     @contents[id] << c

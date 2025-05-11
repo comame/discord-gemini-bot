@@ -1,54 +1,38 @@
 # frozen_string_literal: true
 
-require 'ed25519'
-require 'typed_struct'
+require 'discordrb'
 
 module Discord
   module_function
 
-  # interaction を処理する
-  def handle_interaction(interaction_request)
-    interaction_response = nil
-    case interaction_request.type
-    when Discord::Types::InteractionTypePing
-      interaction_response = Discord::Types::InteractionResponse.new(
-        type: Discord::Types::InteractionCallbackTypePong
-      )
+  def start
+    intent_message_content = 1 << 15
+    bot = ::Discordrb::Bot.new(
+      token: bot_token,
+      intents: [:server_messages, intent_message_content]
+    )
+
+    bot.message do |message_event|
+      bot_mentioned = message_event.message.mentions.any? { |user| user.id == bot.profile.id }
+      replied_message = message_event.message.referenced_message
+
+      if replied_message.nil?
+        # 自分へのメンションならば応答
+        next unless bot_mentioned
+      else
+        # 自分へのメンションあるいはリプライなら応答
+        next unless bot_mentioned || replied_message.user.id == bot.profile.id
+      end
+
+      message_event.message.channel.start_typing
+      message_event.respond 'hi!', false, nil, nil, nil, message_event.message, nil
     end
 
-    raise 'interaction_response が nil' if interaction_response.nil?
+    bot.run true
 
-    interaction_response
-  end
+    bot.online
 
-  # 署名の検証を行う
-  def verify_signature(signature_ed25519, signature_timestamp, body_string)
-    public_key.verify decode_hex(signature_ed25519), signature_timestamp + body_string
-  rescue StandardError => e
-    puts "DiscordのAPI呼び出しの認証に失敗: #{e.message}"
-    false
-  end
-
-  # hex文字列をそのまま文字列に変換。署名の検証に使う。
-  def decode_hex(hex)
-    [hex].pack('H*')
-  end
-
-  # DISCORD_PUBLIC_KEYを取得
-  def public_key
-    k_hex = ENV.fetch('DISCORD_PUBLIC_KEY', nil)
-    raise ArgumentError, 'DISCORD_PUBLIC_KEYが未設定' if k_hex.nil?
-
-    k_str = decode_hex k_hex
-    Ed25519::VerifyKey.new k_str
-  end
-
-  # DISCORD_APPLICATION_IDを取得
-  def application_id
-    k = ENV.fetch('DISCORD_APPLICATION_ID', nil)
-    raise ArgumentError, 'DISCORD_APPLICATION_IDが未設定' if k.nil?
-
-    k
+    bot.join
   end
 
   # DISCORD_BOT_TOKENを取得
@@ -57,31 +41,5 @@ module Discord
     raise ArgumentError, 'DISCORD_BOT_TOKENが未設定' if k.nil?
 
     k
-  end
-end
-
-module Discord
-  module Types
-    class InteractionData < TypedStruct
-      define :id, :string
-      define :name, :string
-      define :type, :int # Unknown
-    end
-
-    InteractionTypePing = 1
-
-    class Interaction < TypedStruct
-      define :id, :string
-      define :application_id, :string
-      define :type, :int # InteractionType
-      define :data, InteractionData
-    end
-
-    InteractionCallbackTypePong = 1
-
-    class InteractionResponse < TypedStruct
-      define :type, :int # InteractionCallbackType
-      define :data, :any, json: ',omitempty'
-    end
   end
 end

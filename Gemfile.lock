@@ -23,7 +23,6 @@ GEM
     discordrb-webhooks (3.5.0)
       rest-client (>= 2.0.0)
     domain_name (0.6.20240107)
-    ed25519 (1.4.0)
     event_emitter (0.2.6)
     ffi (1.17.2)
     ffi (1.17.2-x86_64-linux-gnu)
@@ -38,11 +37,8 @@ GEM
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
     mime-types-data (3.2025.0507)
-    mustermann (3.0.3)
-      ruby2_keywords (~> 0.0.1)
     mutex_m (0.3.0)
     netrc (0.11.0)
-    nio4r (2.7.4)
     opus-ruby (1.0.1)
       ffi
     parallel (1.27.0)
@@ -50,19 +46,7 @@ GEM
       ast (~> 2.4.1)
       racc
     prism (1.4.0)
-    puma (6.6.0)
-      nio4r (~> 2.0)
     racc (1.8.1)
-    rack (3.1.14)
-    rack-protection (4.1.1)
-      base64 (>= 0.1.0)
-      logger (>= 1.6.0)
-      rack (>= 3.0.0, < 4)
-    rack-session (2.1.1)
-      base64 (>= 0.1.0)
-      rack (>= 3.0.0)
-    rackup (2.2.1)
-      rack (>= 3)
     rainbow (3.1.1)
     regexp_parser (2.10.0)
     rest-client (2.1.0)
@@ -85,15 +69,6 @@ GEM
       parser (>= 3.3.7.2)
       prism (~> 1.4)
     ruby-progressbar (1.13.0)
-    ruby2_keywords (0.0.5)
-    sinatra (4.1.1)
-      logger (>= 1.6.0)
-      mustermann (~> 3.0)
-      rack (>= 3.0.0, < 4)
-      rack-protection (= 4.1.1)
-      rack-session (>= 2.0.0, < 3)
-      tilt (~> 2.0)
-    tilt (2.6.0)
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
@@ -111,11 +86,7 @@ PLATFORMS
 DEPENDENCIES
   discord_gemini_bot!
   discordrb (= 3.5.0)
-  ed25519
-  puma
-  rackup
   rubocop
-  sinatra
   typed_struct!
 
 BUNDLED WITH

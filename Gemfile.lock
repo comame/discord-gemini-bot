@@ -14,14 +14,37 @@ GEM
   specs:
     ast (2.4.3)
     base64 (0.2.0)
+    discordrb (3.5.0)
+      discordrb-webhooks (~> 3.5.0)
+      ffi (>= 1.9.24)
+      opus-ruby
+      rest-client (>= 2.0.0)
+      websocket-client-simple (>= 0.3.0)
+    discordrb-webhooks (3.5.0)
+      rest-client (>= 2.0.0)
+    domain_name (0.6.20240107)
     ed25519 (1.4.0)
+    event_emitter (0.2.6)
+    ffi (1.17.2)
+    ffi (1.17.2-x86_64-linux-gnu)
+    http-accept (1.7.0)
+    http-cookie (1.0.8)
+      domain_name (~> 0.5)
     json (2.11.3)
     language_server-protocol (3.17.0.4)
     lint_roller (1.1.0)
     logger (1.7.0)
+    mime-types (3.7.0)
+      logger
+      mime-types-data (~> 3.2025, >= 3.2025.0507)
+    mime-types-data (3.2025.0507)
     mustermann (3.0.3)
       ruby2_keywords (~> 0.0.1)
+    mutex_m (0.3.0)
+    netrc (0.11.0)
     nio4r (2.7.4)
+    opus-ruby (1.0.1)
+      ffi
     parallel (1.27.0)
     parser (3.3.8.0)
       ast (~> 2.4.1)
@@ -42,6 +65,11 @@ GEM
       rack (>= 3)
     rainbow (3.1.1)
     regexp_parser (2.10.0)
+    rest-client (2.1.0)
+      http-accept (>= 1.7.0, < 2.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rubocop (1.75.5)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
@@ -69,6 +97,12 @@ GEM
     unicode-display_width (3.1.4)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
+    websocket (1.2.11)
+    websocket-client-simple (0.9.0)
+      base64
+      event_emitter
+      mutex_m
+      websocket
 
 PLATFORMS
   ruby
@@ -76,6 +110,7 @@ PLATFORMS
 
 DEPENDENCIES
   discord_gemini_bot!
+  discordrb (= 3.5.0)
   ed25519
   puma
   rackup

@@ -2,6 +2,9 @@
 
 require 'discordrb'
 
+require 'discord_gemini_bot/conversation'
+require 'discord_gemini_bot/gemini_api'
+
 module Discord
   module_function
 
@@ -24,13 +27,33 @@ module Discord
         next unless bot_mentioned || replied_message.user.id == bot.profile.id
       end
 
-      reply_id = reply_tree_id bot, message_event.message
+      puts "応答: #{message_event.message.server.name}##{message_event.message.channel.name} #{message_event.message.id}"
 
+      # 試行中であることが分かりやすいように、「入力中」インジケーターを表示しておく
       message_event.message.channel.start_typing
-      sent_message = message_event.respond "リプライツリー: #{reply_id}", false, nil, nil, nil, message_event.message, nil
 
-      @replay_tree_cache ||= {}
-      @replay_tree_cache[sent_message.id] = reply_id
+      begin
+        # リプライツリーを特定する ID
+        reply_id = reply_tree_id bot, message_event.message
+
+        # Gemini での会話
+        Conversation.push_user_text reply_id, message_event.message.content
+        gemini_response = GeminiAPI.generate_content(
+          GeminiAPI::Models::Gemini_2_0_Flash,
+          Conversation.gemini_request(reply_id)
+        )
+        response_text = Conversation.push_model_text reply_id, gemini_response
+
+        # Discord に Gemini の応答を送り返す
+        sent_message = message_event.respond response_text, false, nil, nil, nil, message_event.message, nil
+
+        # リプライツリーを特定できるように、botの返信 Message ID を保存しておく
+        @replay_tree_cache ||= {}
+        @replay_tree_cache[sent_message.id] = reply_id
+      rescue StandardError => e
+        message_event.respond 'エラーが発生しました', false, nil, nil, nil, message_event.message, nil
+        raise e
+      end
     end
 
     bot.run true

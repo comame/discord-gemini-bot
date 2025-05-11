@@ -15,6 +15,7 @@ module GeminiAPI
 
     module FinishReason
       Stop = :STOP
+      MaxTokens = :MAX_TOKENS
     end
 
     class Part < TypedStruct
@@ -31,8 +32,13 @@ module GeminiAPI
       define :finish_reason, :symbol, json: 'finishReason,omitempty' # FinishReason
     end
 
+    class GenerationConfig < TypedStruct
+      define :max_output_tokens, :int, json: 'maxOutputTokens,omitempty'
+    end
+
     class GenerateContentRequest < TypedStruct
       define :contents, [Content]
+      define :generation_config, GenerationConfig, json: 'generationConfig,omitempty'
     end
 
     class Error < TypedStruct

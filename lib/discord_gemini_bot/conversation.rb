@@ -7,7 +7,10 @@ module Conversation
 
   def gemini_request(id)
     GeminiAPI::Types::GenerateContentRequest.new(
-      contents: @contents[id]
+      contents: @contents[id],
+      generation_config: GeminiAPI::Types::GenerationConfig.new(
+        max_output_tokens: 140
+      )
     )
   end
 
@@ -32,8 +35,12 @@ module Conversation
     res = String.new
 
     generate_content_response.candidates.each do |candidate|
-      continue unless candidate.finish_reason == GeminiAPI::Types::FinishReason::Stop
-      continue unless candidate.content.role == GeminiAPI::Types::ContentRole::Model
+      unless [GeminiAPI::Types::FinishReason::Stop, GeminiAPI::Types::FinishReason::MaxTokens].include?(candidate.finish_reason)
+        puts 'geminiが不正なレスポンスを返した'
+        pp generate_content_response
+        next
+      end
+      next unless candidate.content.role == GeminiAPI::Types::ContentRole::Model
 
       @contents[id] << candidate.content
       candidate.content.parts.each do |part|

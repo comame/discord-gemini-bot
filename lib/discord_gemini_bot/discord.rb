@@ -43,6 +43,7 @@ module Discord
           Conversation.gemini_request(reply_id)
         )
         response_text = Conversation.push_model_text reply_id, gemini_response
+        next if response_text == ''
 
         # Discord に Gemini の応答を送り返す
         sent_message = message_event.respond response_text, false, nil, nil, nil, message_event.message, nil
